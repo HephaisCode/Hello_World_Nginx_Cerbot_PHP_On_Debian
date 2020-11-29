@@ -73,7 +73,7 @@ Open browser and go to page http://51.83.45.10/
 
 ## Install PHP
 
-Install PHP with Apache
+Install PHP with Nginx
 
 ```
 apt-get -y install php7.3-fpm
