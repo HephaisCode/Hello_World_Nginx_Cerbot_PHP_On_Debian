@@ -78,6 +78,10 @@ Install PHP with Nginx
 ```
 apt-get -y install php7.3-fpm
 
+systemctl enable php7.3-fpm.service
+
+php-fpm7.3 -v
+
 ```
 
  ## Define our parameters
@@ -132,13 +136,35 @@ echo " server_name ${MYDOMAINNAME};" >> ${MYNGINXCONFIG}
 echo ' location / {' >> ${MYNGINXCONFIG}
 echo '  try_files $uri $uri/ =404;' >> ${MYNGINXCONFIG}
 echo ' }' >> ${MYNGINXCONFIG}
+echo '   location ~ \.php$ {' >> ${MYNGINXCONFIG}
+echo '     fastcgi_split_path_info ^(.+\.php)(/.+)$;' >> ${MYNGINXCONFIG}
+echo '     fastcgi_pass unix:/var/run/php7.3-fpm.sock;' >> ${MYNGINXCONFIG}
+echo '     include fastcgi.conf;' >> ${MYNGINXCONFIG}
+echo '   }' >> ${MYNGINXCONFIG}
+echo '}' >> ${MYNGINXCONFIG}
+systemctl restart nginx
+
+
+MYNGINXCONFIG=/etc/nginx/sites-available/${MYDOMAINNAME}
+rm ${MYNGINXCONFIG}
+echo 'server {' >> ${MYNGINXCONFIG}
+echo " listen 80;" >> ${MYNGINXCONFIG}
+echo " listen [::]:80;" >> ${MYNGINXCONFIG}
+echo " root /home/${MYUSER}/${MYWEBFOLDER};" >> ${MYNGINXCONFIG}
+echo " index index.html index.htm index.nginx-debian.html;" >> ${MYNGINXCONFIG}
+echo " server_name ${MYDOMAINNAME};" >> ${MYNGINXCONFIG}
+echo ' location / {' >> ${MYNGINXCONFIG}
+echo '  try_files $uri $uri/ =404;' >> ${MYNGINXCONFIG}
+echo ' }' >> ${MYNGINXCONFIG}
 echo ' # pass the PHP scripts to FastCGI server listening on 127.0.0.1:9000' >> ${MYNGINXCONFIG}
 echo '   location ~ \.php$ {' >> ${MYNGINXCONFIG}
-echo '     try_files $uri =404;' >> ${MYNGINXCONFIG}
-echo '     fastcgi_pass unix:/var/run/php5-fpm.sock;' >> ${MYNGINXCONFIG}
+#echo '     try_files $uri =404;' >> ${MYNGINXCONFIG}
+echo '     fastcgi_split_path_info ^(.+\.php)(/.+)$;' >> ${MYNGINXCONFIG}
+echo '     fastcgi_pass unix:/var/run/php7.3-fpm.sock;' >> ${MYNGINXCONFIG}
 echo '     fastcgi_index index.php;' >> ${MYNGINXCONFIG}
-echo '     fastcgi_param SCRIPT_FILENAME $document_root$fastcgi_script_name;' >> ${MYNGINXCONFIG}
-echo '     include fastcgi_params;' >> ${MYNGINXCONFIG}
+#echo '     fastcgi_param SCRIPT_FILENAME $document_root$fastcgi_script_name;' >> ${MYNGINXCONFIG}
+#echo '     include fastcgi_params;' >> ${MYNGINXCONFIG}
+echo '     include fastcgi.conf;' >> ${MYNGINXCONFIG}
 echo '   }' >> ${MYNGINXCONFIG}
 echo '}' >> ${MYNGINXCONFIG}
 
@@ -147,6 +173,11 @@ ln -s /etc/nginx/sites-available/${MYDOMAINNAME} /etc/nginx/sites-enabled/
 systemctl restart nginx
 
 ```
+
+
+Open browser and go to page http://hello-world.hephaiscode.com 
+
+Open browser and go to page http://hello-world.hephaiscode.com/phpinfo.php
 
 ## Add ssl certificat by Certbot
 
