@@ -125,6 +125,8 @@ chmod -R 750 /home/${MYUSER}/${MYWEBFOLDER}
 Create the host parameters for Apache and our domains **hello-world.hephaiscode.com**
 
 ```
+
+
 MYNGINXCONFIG=/etc/nginx/sites-available/${MYDOMAINNAME}
 rm ${MYNGINXCONFIG}
 echo 'server {' >> ${MYNGINXCONFIG}
@@ -137,36 +139,12 @@ echo ' location / {' >> ${MYNGINXCONFIG}
 echo '  try_files $uri $uri/ =404;' >> ${MYNGINXCONFIG}
 echo ' }' >> ${MYNGINXCONFIG}
 echo '   location ~ \.php$ {' >> ${MYNGINXCONFIG}
-echo '     fastcgi_split_path_info ^(.+\.php)(/.+)$;' >> ${MYNGINXCONFIG}
-echo '     fastcgi_pass unix:/var/run/php7.3-fpm.sock;' >> ${MYNGINXCONFIG}
 echo '     include fastcgi.conf;' >> ${MYNGINXCONFIG}
+echo '     fastcgi_intercept_errors on;' >> ${MYNGINXCONFIG}
+echo '     fastcgi_pass unix:/var/run/php/php7.3-fpm.sock;' >> ${MYNGINXCONFIG}
 echo '   }' >> ${MYNGINXCONFIG}
 echo '}' >> ${MYNGINXCONFIG}
 systemctl restart nginx
-
-
-MYNGINXCONFIG=/etc/nginx/sites-available/${MYDOMAINNAME}
-rm ${MYNGINXCONFIG}
-echo 'server {' >> ${MYNGINXCONFIG}
-echo " listen 80;" >> ${MYNGINXCONFIG}
-echo " listen [::]:80;" >> ${MYNGINXCONFIG}
-echo " root /home/${MYUSER}/${MYWEBFOLDER};" >> ${MYNGINXCONFIG}
-echo " index index.html index.htm index.nginx-debian.html;" >> ${MYNGINXCONFIG}
-echo " server_name ${MYDOMAINNAME};" >> ${MYNGINXCONFIG}
-echo ' location / {' >> ${MYNGINXCONFIG}
-echo '  try_files $uri $uri/ =404;' >> ${MYNGINXCONFIG}
-echo ' }' >> ${MYNGINXCONFIG}
-echo ' # pass the PHP scripts to FastCGI server listening on 127.0.0.1:9000' >> ${MYNGINXCONFIG}
-echo '   location ~ \.php$ {' >> ${MYNGINXCONFIG}
-#echo '     try_files $uri =404;' >> ${MYNGINXCONFIG}
-echo '     fastcgi_split_path_info ^(.+\.php)(/.+)$;' >> ${MYNGINXCONFIG}
-echo '     fastcgi_pass unix:/var/run/php7.3-fpm.sock;' >> ${MYNGINXCONFIG}
-echo '     fastcgi_index index.php;' >> ${MYNGINXCONFIG}
-#echo '     fastcgi_param SCRIPT_FILENAME $document_root$fastcgi_script_name;' >> ${MYNGINXCONFIG}
-#echo '     include fastcgi_params;' >> ${MYNGINXCONFIG}
-echo '     include fastcgi.conf;' >> ${MYNGINXCONFIG}
-echo '   }' >> ${MYNGINXCONFIG}
-echo '}' >> ${MYNGINXCONFIG}
 
 ln -s /etc/nginx/sites-available/${MYDOMAINNAME} /etc/nginx/sites-enabled/
 
@@ -198,7 +176,11 @@ systemctl restart nginx
 
 Open browser and go to page http://hello-world.hephaiscode.com 
 
+Open browser and go to page http://hello-world.hephaiscode.com/phpinfo.php
+
 Open browser and go to page https://hello-world.hephaiscode.com (certificat is valided by certbot)
+
+Open browser and go to page https://hello-world.hephaiscode.com/phpinfo.php (certificat is valided by certbot)
 
 ## Hello World Success
 
